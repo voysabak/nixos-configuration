@@ -8,11 +8,15 @@ let
       sha256 = "1jv9hlrpq8h6fm4c0kxhjx8lfyp8b36jk2hfz7lhdvmzvy9vkqfi"; # get actual sha256 via: nix-prefetch-url https://link.com/Helium.AppImage
     };
   };
-  unstable = import <unstable> { config = { allowUnfree = true; }; };
+  unstable = import <unstable> {
+    config = {
+      allowUnfree = true;
+    };
+  };
 in
 {
   environment.systemPackages = with pkgs; [
-    kitty
+    unstable.kitty
     dconf
     unstable.waybar
     rofi
@@ -71,7 +75,10 @@ in
     blueman
     cups
     cups-filters
-    simple-scan 
+    simple-scan
     system-config-printer
- ];
+    losslesscut-bin #for editing
+    shotcut # also editing
+    super-productivity # pretty cool app
+  ];
 }

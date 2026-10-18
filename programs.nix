@@ -14,6 +14,8 @@
       upd = "sudo nix-channel --update";
 
       ai_run = "ollama run llama3.1";
+
+      ff = "fastfetch";
     };
     interactiveShellInit = ''
       if test -z "$WAYLAND_DISPLAY" -a -z "$DISPLAY" -a (tty) = "/dev/tty1"
@@ -76,25 +78,41 @@
   # Enable Blueman manager applet service (optional but recommended)
   services.blueman.enable = true;
 
+  services.printing = {
+    enable = true;
+    # Drivers for Canon printers
+    drivers = [
+      pkgs.gutenprint
+      pkgs.cnijfilter2
+    ];
+  };
 
+  services.avahi = {
+    enable = true;
+    nssmdns4 = true;
+    openFirewall = true;
+  };
 
- services.printing = {
-   enable = true;
-   # Drivers for Canon printers
-   drivers = [ pkgs.gutenprint pkgs.cnijfilter2 ]; 
- };
+  hardware.sane = {
+    enable = true;
+    extraBackends = [ pkgs.sane-airscan ]; # USB scanner support
+  };
 
- services.avahi = {
-   enable = true;
-   nssmdns4 = true;
-   openFirewall = true;
- };
+  users.users.sachi.extraGroups = [
+    "scanner"
+    "lp"
+  ];
 
- hardware.sane = {
-   enable = true;
-   extraBackends = [ pkgs.sane-airscan ]; # USB scanner support
- };
+  # For OBS plugins:
+  environment.systemPackages = with pkgs; [
+    (wrapOBS {
+      plugins = with pkgs.obs-studio-plugins; [
+        wlrobs
+        obs-pipewire-audio-capture
+        obs-vaapi
+        obs-vkcapture
+      ];
+    })
+  ];
 
-
- users.users.sachi.extraGroups = [ "scanner" "lp" ];
 }
